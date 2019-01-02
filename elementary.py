@@ -78,7 +78,17 @@ class BHDCmd(cmd.Cmd):
                                                                                                params[2],
                                                                                                target_object))
                 paths = bh_data[source_type].trace(source_object, target_type, target_object, TraceHistory())
-                print(paths)
+                for path in paths:
+                    path_parts = []
+                    for item in path:
+                        if "users" in item:
+                            path_parts.append("user {}".format(item.get("users")))
+                        elif "groups" in item:
+                            path_parts.append("group {}".format(item.get("groups")))
+                        elif "computers" in item:
+                            path_parts.append("computer {}".format(item.get("computers")))
+                    print("* {}".format(" --> ".join(path_parts)))
+
 
     def help_trace(self):
         print(

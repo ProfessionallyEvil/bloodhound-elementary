@@ -78,6 +78,7 @@ class BHDCmd(cmd.Cmd):
                                                                                                params[2],
                                                                                                target_object))
                 paths = bh_data[source_type].trace(source_object, target_type, target_object, TraceHistory())
+                paths.sort(key=len)
                 for path in paths:
                     path_parts = []
                     for item in path:

@@ -34,6 +34,13 @@ class TraceHistory:
         computer_set.difference_update(self._computers)
         self._computers.update(computer_set)
 
+    def copy(self):
+        the_copy = TraceHistory()
+        the_copy._users = self._users.copy()
+        the_copy._groups = self._groups.copy()
+        the_copy._computers = self._computers.copy()
+        return the_copy
+
 
 class BloodhoundObject:
 
@@ -145,7 +152,8 @@ class Computers(BloodhoundObject):
             trace_history.dedupe_users(user_sessions)
 
             for user in user_sessions:
-                user_paths = bh_data["users"].trace(user, target_type, target_name, trace_history)
+                trace_history.add_user(user)
+                user_paths = bh_data["users"].trace(user, target_type, target_name, trace_history.copy())
                 for up in user_paths:
                     up.appendleft({"computers": source_name})
                     paths.append(up)
@@ -319,7 +327,8 @@ class Users(BloodhoundObject):
             trace_history.dedupe_groups(groups)
 
             for group in groups:
-                group_paths = bh_data["groups"].trace(group, target_type, target_name, trace_history)
+                trace_history.add_group(group)
+                group_paths = bh_data["groups"].trace(group, target_type, target_name, trace_history.copy())
                 for gp in group_paths:
                     gp.appendleft({"users": source_name})
                     paths.append(gp)
@@ -331,7 +340,8 @@ class Users(BloodhoundObject):
             trace_history.dedupe_computers(computers)
 
             for computer in computers:
-                computer_paths = bh_data["computers"].trace(computer, target_type, target_name, trace_history)
+                trace_history.add_computer(computer)
+                computer_paths = bh_data["computers"].trace(computer, target_type, target_name, trace_history.copy())
                 for cp in computer_paths:
                     cp.appendleft({"users": source_name, "localadmin": computer in local_admin})
                     paths.append(cp)
